@@ -29,14 +29,16 @@ func main() {
 		if len(splited) == 2 {
 			portFromArg, err := strconv.ParseInt(splited[0], 10, 64)
 			if err != nil {
-				searchTerm = os.Args[1]
+				cliUsage()
 			}
 			portNumber = int(portFromArg)
 			portProtocol = splited[1]
+		} else if len(splited) == 1 {
+			searchTerm = os.Args[1]
 		}
 	}
 
-	if portNumber == -1 && searchTerm != "" {
+	if portNumber == -1 && searchTerm == "" {
 		cliUsage()
 	}
 
@@ -54,17 +56,18 @@ func main() {
 		if strconv.FormatInt(int64(portNumber), 10) == records[i][1] {
 			if portProtocol == "*" || portProtocol == records[i][2] {
 				printRecord(records, i)
-				fmt.Println("------------")
 			}
-			if searchTerm != "" {
-				for columnNumber := range len(records[i]) {
-					if strings.Contains(searchTerm, records[i][columnNumber]) {
-						printRecord(records, i)
-						break
-					}
+		}
+
+		if searchTerm != "" {
+			for columnNumber := range len(records[i]) {
+				if strings.Contains(records[i][columnNumber], searchTerm) {
+					printRecord(records, i)
+					break
 				}
 			}
 		}
+
 	}
 
 }
@@ -81,6 +84,7 @@ func printRecord(records [][]string, recordNumber int) {
 			fmt.Printf("%s: %s\n", records[0][j], records[recordNumber][j])
 		}
 	}
+	fmt.Println("------------")
 }
 
 func getCSVString() string {
