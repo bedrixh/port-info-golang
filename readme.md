@@ -1,4 +1,4 @@
-# lightweight tool to get infromation about port
+# Lightweight tool to get infromation about port
 
 ## Cli usage
 `port 80`
