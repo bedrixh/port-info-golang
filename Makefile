@@ -3,7 +3,7 @@
 RM       = rm -f
 PREFIX   ?= /usr/local
 GO_LDFLAGS := -ldflags "-X main.Version=$$(git describe --tags --exclude release) -X main.Commit=$$(git rev-parse --short HEAD) -X main.BuildTime=$$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-BIN_NAME ?= ssl-manager
+BIN_NAME ?= port-info
 
 compile:
 	@echo "Compiling for every OS and Platform"
