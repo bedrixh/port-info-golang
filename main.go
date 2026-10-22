@@ -16,6 +16,11 @@ import (
 func main() {
 	portNumber := -1
 	portProtocol := "*"
+	searchTerm := ""
+
+	if len(os.Args) < 2 || os.Args[1] == "-h" {
+		cliUsage()
+	}
 
 	if portFromArg, err := strconv.ParseInt(os.Args[1], 10, 64); err == nil {
 		portNumber = int(portFromArg)
@@ -24,14 +29,14 @@ func main() {
 		if len(splited) == 2 {
 			portFromArg, err := strconv.ParseInt(splited[0], 10, 64)
 			if err != nil {
-				cliUsage()
+				searchTerm = os.Args[1]
 			}
 			portNumber = int(portFromArg)
 			portProtocol = splited[1]
 		}
 	}
 
-	if portNumber == -1 {
+	if portNumber == -1 && searchTerm != "" {
 		cliUsage()
 	}
 
@@ -48,12 +53,16 @@ func main() {
 	for i := range len(records) {
 		if strconv.FormatInt(int64(portNumber), 10) == records[i][1] {
 			if portProtocol == "*" || portProtocol == records[i][2] {
-				for j := range len(records[0]) {
-					if records[i][j] != "" {
-						fmt.Printf("%s: %s\n", records[0][j], records[i][j])
+				printRecord(records, i)
+				fmt.Println("------------")
+			}
+			if searchTerm != "" {
+				for columnNumber := range len(records[i]) {
+					if strings.Contains(searchTerm, records[i][columnNumber]) {
+						printRecord(records, i)
+						break
 					}
 				}
-				fmt.Println("------------")
 			}
 		}
 	}
@@ -61,8 +70,17 @@ func main() {
 }
 
 func cliUsage() {
-	println(os.Args[0] + " ([number]) or ([number]/[protocol])")
+	println(os.Args[0] + " ([number]) or ([number]/[protocol]) or ([search term])")
+	println("-h shows this help message")
 	os.Exit(0)
+}
+
+func printRecord(records [][]string, recordNumber int) {
+	for j := range len(records[0]) {
+		if records[recordNumber][j] != "" {
+			fmt.Printf("%s: %s\n", records[0][j], records[recordNumber][j])
+		}
+	}
 }
 
 func getCSVString() string {
